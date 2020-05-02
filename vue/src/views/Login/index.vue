@@ -7,8 +7,8 @@
     <!--表单-->
         <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" class="login-form" size='medium'>
       <el-form-item prop="email" class="item-form">
-      <label>邮箱</label>
-        <el-input type="text" v-model="ruleForm.email" autocomplete="off"></el-input>
+      <label for="email">邮箱</label>
+        <el-input id="email" type="text" v-model="ruleForm.email" autocomplete="off"></el-input>
       </el-form-item>
 
       <el-form-item prop="password" class="item-form">
@@ -26,7 +26,7 @@
       <el-row :gutter="10">
         <el-col :span="18"><el-input v-model="ruleForm.cap"></el-input></el-col>
         <el-col :span="6">
-          <el-button type="success" class="block">验证码</el-button>
+          <el-button type="success" class="block" @click="getSms()">验证码</el-button>
         </el-col>
 
       </el-row>
@@ -35,7 +35,7 @@
       </el-form-item>
 
       <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm')" class="login-btn block">提交</el-button>
+        <el-button type="primary" @click="submitForm('ruleForm')" class="login-btn block" :disabled = "loginButtonStatus">{{model === "login" ? "登录":"注册"}}</el-button>
       </el-form-item>
 
     </el-form>
@@ -45,13 +45,25 @@
 </template>
 
 <script>
+
+import {GetSms} from '@/api/login'
+import {reactive,ref,isRef,toRefs,onMounted} from '@vue/composition-api'
 import { stripscript,validateE,validatepwd,validcap}from '@/utils/validata';
 export default {
   name:'login',
-  data(){
-
-      //验证用户名
-      var validateEmail = (rule, value, callback) => {
+  setup(props,{refs,root}){
+    /*context下的
+      attrs: this.$attrs
+      emit: this.$emit
+      listeners:this.$listeners
+      parent: this.parent
+      refs:this.refs
+      roots:this
+      */
+      //
+    //data数据、生命周期、自定义函数
+          //验证用户名
+      let validateEmail = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('请输入邮箱！'));
         } else if(validateE(value)){
@@ -62,9 +74,9 @@ export default {
         }
       };
       //验证密码
-      var validatepsd = (rule, value, callback) => {
-        this.ruleForm.password = stripscript(value)
-        value = this.ruleForm.password
+      let validatepsd = (rule, value, callback) => {
+        ruleForm.password = stripscript(value)
+        value = ruleForm.password
 
         if (value === '') {
           callback(new Error('请输入密码（必须包含数字和字母）'));
@@ -75,48 +87,55 @@ export default {
         }
       };
       //重复密码验证
-      var validatepsds = (rule, value, callback) => {
+      let validatepsds = (rule, value, callback) => {
         //登录界面不用验证
-        if(this.model === 'login'){ callback();}
-        this.ruleForm.passwords = stripscript(value)
-        value = this.ruleForm.passwords
+        if(model.value === 'login'){ callback();}
+        ruleForm.passwords = stripscript(value)
+        value = ruleForm.passwords
 
         if (value === '') {
           callback(new Error('请再次输入密码'));
-        } else if (value != this.ruleForm.password) {
+        } else if (value != ruleForm.password) {
           callback(new Error('密码不一致'));
         } else {
           callback();
         }
       };
           //验证码
-          var checkcap = (rule, value, callback) => {
-            //过滤特殊字符
-            this.ruleForm.cap = stripscript(value)
-            value = this.ruleForm.cap
-            if (value === '') {
-              return callback(new Error('验证码不能为空'));
-            }else if(validcap(value)){
-              return callback(new Error('验证码格式有误'))
-            }else{
-              callback()
-            }
-          };
-    return {
-      menuTab:[
+      let checkcap = (rule, value, callback) => {
+        //过滤特殊字符
+        ruleForm.cap = stripscript(value)
+        value = ruleForm.cap
+        if (value === '') {
+          return callback(new Error('验证码不能为空'));
+        }else if(validcap(value)){
+          return callback(new Error('验证码格式有误'))
+        }else{
+          callback()
+        }
+      };
+
+        const menuTab = reactive([
         {txt:'Login',current:true,type:'login'},
         {txt:'Reg',current:false,type:'register'}
-      ],
+      ])
+
       //显示重复密码
-      model:'login',
-      // 表单数据
-      ruleForm: {
+      const model = ref('login')
+
+      //登录状态
+      const loginButtonStatus = ref(true)
+
+      //表单绑定数据
+      const ruleForm = reactive({
           email: '',
           password: '',
           passwords: '',
           cap: ''
-        },
-        rules: {
+      })
+
+      //表单验证
+      const rules = reactive({
           email: [
             { validator: validateEmail, trigger: 'blur' }
           ],
@@ -129,25 +148,55 @@ export default {
           cap: [
             { validator: checkcap, trigger: 'blur' }
           ]
-        }
-    }
-  },
-  created() {
-    
-  },
-  mounted() {
-    
-  },
-  methods: {
-    toggleMenu(data){
-      this.menuTab.forEach(elem => {
+        })
+
+
+      //声明函数
+    const toggleMenu = ((data)=>{
+      // console.log(data)
+      menuTab.forEach(elem => {
         elem.current = false
       })
       data.current = true
-      this.model = data.type
-    },
-   submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
+      model.value = data.type
+    })
+
+    /*获取验证码*/
+    const getSms = (()=>{
+      // 验证邮箱空值
+      if(ruleForm.email == ''){
+        root.$message.error('邮箱不能为空！');
+        return false
+      }
+
+      // 验证邮箱格式
+      if(validateE(ruleForm.email)){
+        root.$message.error('邮箱格式有误！');
+        return false
+      }
+
+      //获取验证码
+      let requestData = {
+        username:ruleForm.email,
+        module:'login'
+      }
+        //接口
+      GetSms(requestData)
+      .then(response=>{
+
+      })
+      .catch(err=>{
+          console.log(error)
+        })
+
+      
+    })
+      
+
+
+    /*提交表单*/
+    const submitForm = ((formName)=>{
+        refs[formName].validate((valid) => {
           if (valid) {
             alert('submit!');
           } else {
@@ -155,11 +204,43 @@ export default {
             console.log('error submit!!');
             return false;
           }
-        });
+        })
+      })
+  
+
+      // // console.log(menuTab)
+      // const model = ref('login')
+
+      //生命周期
+      //完成后
+      onMounted()
+
+      return {
+        menuTab,
+        model,
+        toggleMenu,
+        submitForm,
+        ruleForm,
+        rules,
+        loginButtonStatus,
+        getSms
       }
+  },
+  data(){
+
+
+   return {
+
+
+      // 表单数据
+
+
+    }
   }
 }
 </script>
+
+
 <style type="text/scss" lang="scss" scoped>
   #login{
     background-color:#344a5f;
