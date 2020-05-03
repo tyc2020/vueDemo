@@ -13,7 +13,7 @@
 
       <el-form-item prop="password" class="item-form">
       <label>密码</label>
-        <el-input type="text" v-model="ruleForm.password" autocomplete="off" minlength="6" maxlength="20"></el-input>
+        <el-input type="password" v-model="ruleForm.password" autocomplete="off" minlength="6" maxlength="20"></el-input>
       </el-form-item>
 
        <el-form-item prop="passwords" class="item-form" v-show = "model === 'register'">
@@ -24,9 +24,9 @@
       <el-form-item prop="cap" class="item-form">
       <label>验证码</label>
       <el-row :gutter="10">
-        <el-col :span="18"><el-input v-model="ruleForm.cap"></el-input></el-col>
-        <el-col :span="6">
-          <el-button type="success" class="block" @click="getSms()">验证码</el-button>
+        <el-col :span="15"><el-input v-model="ruleForm.cap"></el-input></el-col>
+        <el-col :span="9">
+          <el-button type="success" class="block" @click="getSms()" :disabled="capBtnStatus.status">{{capBtnStatus.text}}</el-button>
         </el-col>
 
       </el-row>
@@ -46,7 +46,7 @@
 
 <script>
 
-import {GetSms} from '@/api/login'
+import {GetSms,Register} from '@/api/login'
 import {reactive,ref,isRef,toRefs,onMounted} from '@vue/composition-api'
 import { stripscript,validateE,validatepwd,validcap}from '@/utils/validata';
 export default {
@@ -114,17 +114,30 @@ export default {
           callback()
         }
       };
+      //声明数据`````````````````````````````````````````````````
 
         const menuTab = reactive([
-        {txt:'Login',current:true,type:'login'},
-        {txt:'Reg',current:false,type:'register'}
+        {txt:'登录',current:true,type:'login'},
+        {txt:'注册',current:false,type:'register'}
       ])
 
       //显示重复密码
       const model = ref('login')
 
+      //验证码状态
+      const capBtnStatus = reactive(
+        {
+          status:false,
+          text:"验证码"
+        }
+      )
+      //倒计时
+      const timer = ref(null)
+
       //登录状态
       const loginButtonStatus = ref(true)
+      
+
 
       //表单绑定数据
       const ruleForm = reactive({
@@ -159,6 +172,9 @@ export default {
       })
       data.current = true
       model.value = data.type
+
+      //重置表单
+      refs.ruleForm.resetFields()
     })
 
     /*获取验证码*/
@@ -178,19 +194,27 @@ export default {
       //获取验证码
       let requestData = {
         username:ruleForm.email,
-        module:'login'
+        module:model.value
       }
-        //接口
-      GetSms(requestData)
-      console.log(GetSms(requestData))
-      .then(response=>{
+      //改变验证码状态
+      capBtnStatus.status = true
+      capBtnStatus.text = "发送中"
 
+        GetSms(requestData)
+        .then(response=>{
+          let data = response.data
+          root.$message({
+            message:data.message,
+            type:"success"
+          })
+          //启用登录及注册按钮
+          loginButtonStatus.value = false
+          //重新验证码倒计时
+          countDown(5)
       })
       .catch(err=>{
           console.log(error)
         })
-
-      
     })
       
 
@@ -199,13 +223,44 @@ export default {
     const submitForm = ((formName)=>{
         refs[formName].validate((valid) => {
           if (valid) {
-            alert('submit!');
+            let requestData = {
+              username:ruleForm.email,
+              password:ruleForm.password,
+              code:ruleForm.cap,
+              module:'register'
+
+            }
+            Register(requestData).then(response=>{
+              console.log(response)
+              let data = response.data
+              root.$message({
+                message:data.message,
+                type:"success"
+              })
+            }).catch(error=>{})
           } else {
             console.log(valid)
             console.log('error submit!!');
             return false;
           }
         })
+      })
+
+      //倒计时方法
+
+      const countDown = ((number)=>{
+
+        timer.value = setInterval(()=>{
+          number --
+          if(number === 0){
+            clearInterval(timer.value)
+            capBtnStatus.status = false
+            capBtnStatus.text = '重新获取'
+          }else{
+            capBtnStatus.text =`已发送 ${number}s`
+          }
+          
+        },1000)
       })
   
 
@@ -224,7 +279,8 @@ export default {
         ruleForm,
         rules,
         loginButtonStatus,
-        getSms
+        capBtnStatus,
+        getSms,
       }
   },
   data(){
