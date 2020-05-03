@@ -182,6 +182,7 @@ export default {
       }
         //接口
       GetSms(requestData)
+      console.log(GetSms(requestData))
       .then(response=>{
 
       })
