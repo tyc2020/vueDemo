@@ -89,6 +89,7 @@
 </template>
 
 <script>
+import sha1 from "js-sha1";
 import { GetSms, Register, Login } from "@/api/login";
 import { reactive, ref, onMounted } from "@vue/composition-api";
 import {
@@ -211,6 +212,13 @@ export default {
 
       //重置表单
       refs.ruleForm.resetFields();
+      clearCountDown();
+    };
+
+    //更新按钮状态
+    const updateBtnStatus = params => {
+      capBtnStatus.status = params.status;
+      capBtnStatus.text = params.text;
     };
 
     /*获取验证码*/
@@ -233,8 +241,10 @@ export default {
         module: model.value
       };
       //改变验证码状态
-      capBtnStatus.status = true;
-      capBtnStatus.text = "发送中";
+      updateBtnStatus({
+        status: true,
+        text: "发送中"
+      });
 
       GetSms(requestData)
         .then(response => {
@@ -264,11 +274,6 @@ export default {
         if (valid) {
           //验证通过，再判断是在注册页还是登录页
           model.value === "login" ? login() : register();
-          if (model.value === "login") {
-            login();
-          } else {
-            register();
-          }
         } else {
           console.log(valid);
           console.log("error submit!!");
@@ -281,13 +286,16 @@ export default {
     const login = () => {
       let requestData = {
         username: ruleForm.email,
-        password: ruleForm.password,
+        password: sha1(ruleForm.password),
         code: ruleForm.cap,
         module: "login"
       };
       Login(requestData)
         .then(response => {
           console.log(response + "login...");
+          root.$router.push({
+            name: "Console"
+          });
         })
         .catch(error => {
           console.log(error);
@@ -298,7 +306,7 @@ export default {
     const register = () => {
       let requestData = {
         username: ruleForm.email,
-        password: ruleForm.password,
+        password: sha1(ruleForm.password),
         code: ruleForm.cap,
         module: "register"
       };
@@ -329,8 +337,10 @@ export default {
         number--;
         if (number === 0) {
           clearInterval(timer.value);
-          capBtnStatus.status = false;
-          capBtnStatus.text = "重新获取";
+          updateBtnStatus({
+            status: false,
+            text: "重新获取"
+          });
         } else {
           capBtnStatus.text = `已发送 ${number}s`;
         }
@@ -342,9 +352,10 @@ export default {
       */
     const clearCountDown = () => {
       //还原验证码按钮
-      capBtnStatus.status = false;
-      capBtnStatus.text = "验证码";
-
+      updateBtnStatus({
+        status: false,
+        text: "验证码"
+      });
       clearInterval(timer.value);
 
       // const capBtnStatus = reactive(
@@ -373,7 +384,8 @@ export default {
       capBtnStatus,
       getSms,
       login,
-      register
+      register,
+      updateBtnStatus
     };
   },
   data() {
