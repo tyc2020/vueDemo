@@ -12,10 +12,10 @@
       router
     >
       <template v-for="(item, index) in routers">
-        <el-submenu v-if="!item.hidden" :key="item.id" :index="index">
+        <el-submenu v-if="!item.hidden" :key="item.id" :index="index + ''">
           <!--一级菜单-->
           <template slot="title">
-            <i class="el-icon-location"></i>
+            <svg-icon :iconClass="item.meta.icon" :className="item.meta.icon" />
             <span slot="title">{{ item.meta.name }}</span>
           </template>
           <!--二级菜单-->
@@ -26,9 +26,12 @@
             >{{ subItem.meta.name }}</el-menu-item
           >
         </el-submenu>
+        
       </template>
+
     </el-menu>
   </div>
+  
 </template>
 
 <script>
@@ -39,13 +42,12 @@ export default {
   setup(props, { root }) {
     //data数据
     const isCollapse = ref(false);
-    console.log(root.$router.options);
+    // console.log(root.$router.options);
     const routers = reactive(root.$router.options.routes);
-    console.log(routers);
 
     //方法
     const handleOpen = (key, keyPath) => {
-      console.log(key, keyPath);
+      console.log(key, keyPath + "123");
     };
     const handleClose = (key, keyPath) => {
       console.log(key, keyPath);
@@ -69,5 +71,10 @@ export default {
   width: $navMenu;
   height: 100vh;
   background-color: #344a5f;
+  svg {
+    font-size: 20px;
+    margin-right: 10px;
+  }
 }
+
 </style>

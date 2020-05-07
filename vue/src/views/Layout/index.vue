@@ -13,7 +13,9 @@ import LayoutMain from "./Components/Main";
 export default {
   name: "layout",
   components: { LayoutMain, LayoutHeader, LayoutNav },
-  setup() {}
+  setup() {
+    console.log(1)
+  }
 };
 </script>
 <style lang="scss" scoped>

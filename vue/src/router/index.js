@@ -2,6 +2,9 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 Vue.use(VueRouter);
 
+//引入布局组件
+import Layout from "@/views/Layout/index";
+
 const routes = [
   {
     path: "/",
@@ -25,9 +28,10 @@ const routes = [
     name: "Console",
     redirect: "index",
     meta: {
-      name: "控制台"
+      name: "控制台",
+      icon: "console"
     },
-    component: () => import("../views/Layout/index.vue"),
+    component: Layout,
     children: [
       {
         path: "/index",
@@ -35,7 +39,7 @@ const routes = [
         meta: {
           name: "首页"
         },
-        component: () => import("../views/Console/index.vue")
+        component: Layout
       }
     ]
   },
@@ -44,9 +48,10 @@ const routes = [
     path: "/info",
     name: "Info",
     meta: {
-      name: "信息管理"
+      name: "信息管理",
+      icon: "info"
     },
-    component: () => import("../views/Layout/index.vue"),
+    component: Layout,
     children: [
       {
         path: "/infoIndex",
@@ -71,9 +76,10 @@ const routes = [
     path: "/user",
     name: "User",
     meta: {
-      name: "用户管理"
+      name: "用户管理",
+      icon: "user"
     },
-    component: () => import("../views/Layout/index.vue"),
+    component: Layout,
     children: [
       {
         path: "/userIndex",
