@@ -1,5 +1,6 @@
 <template>
   <div id="layout">
+  <div>首页</div>
     <LayoutHeader />
     <LayoutMain />
     <LayoutNav />
@@ -18,8 +19,4 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
-#layout {
-  background-color: #eceaea;
-}
-</style>
+<style lang="scss" scoped></style>
