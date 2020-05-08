@@ -10,7 +10,16 @@
 </template>
 
 <script>
-export default {};
+import { ref, reactive } from "@vue/composition-api";
+export default {
+  name: "layoutMain",
+  setup(){
+    const str = ref('{"name": "星月","title": "alk"}')
+    const json = reactive(JSON.parse(str.value))
+    console.log(json)
+
+  }
+};
 </script>
 <style lang="scss" scoped>
 @import "../../../styles/config.scss";

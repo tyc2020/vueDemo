@@ -34,6 +34,8 @@ export default {
   line-height: 75px;
   background-color: #fff;
   @include webkit(box-shadow,0 3px 16px 0 rgba(0, 0, 0, 0.1));
+  @include webkit(transition, all 0.3s ease 0s);
+
 }
 .open{
   #header-wrap { left: $navMenu }

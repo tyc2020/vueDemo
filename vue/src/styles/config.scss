@@ -6,13 +6,15 @@ $navMenuMin: 64px;
 $layoutHeader: 75px;
 //主色调
 $mainColor: #f56c6c;
+//副色调
+$subColor: #344a5f;
+//按钮色
+$btnColor: #f56c6c;
 
-@mixin webkit($type,$value){
-  webkit-#{$type}: $type;
-  -moz-#{$type}: $type;
-  -o-#{$type}: $type;
-  -ms-#{$type}: $type;
-  #{$type}: $type;
-
-
+@mixin webkit($type, $value){
+  -webkit-#{$type}: $value;
+  -moz-#{$type}: $value;
+  -o-#{$type}: $value;
+  -ms-#{$type}: $value;
+  #{$type}: $value;
 }
