@@ -30,15 +30,22 @@ export default {};
   padding-top: $layoutHeader + 30px;
   padding-left: $navMenu + 30px;
   padding-right: 30px;
-  -webkit-box-sizing: border-box; 
-  box-sizing: border-box;
+  @include webkit(box-sizing, border-box );
+  @include webkit(transition, all 0.3s ease 0s);
+}
+
+.open {
+  .main-content { padding-left: $navMenu + 30px; }
+}
+
+.close {
+  .main-content { padding-left: $navMenuMin + 30px; }
 }
 .content {
   width: 100%;
   height:100%;
   padding: 30px 30px 0 30px;
-  -webkit-box-sizing: border-box; 
-  box-sizing: border-box;
+  @include webkit(box-sizing, border-box );
   background-color: #fff;
 }
 </style>
