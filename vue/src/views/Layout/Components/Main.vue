@@ -16,7 +16,7 @@ export default {
   setup(){
     const str = ref('{"name": "星月","title": "alk"}')
     const json = reactive(JSON.parse(str.value))
-    console.log(json)
+    // console.log(json)
 
   }
 };

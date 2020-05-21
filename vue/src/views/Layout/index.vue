@@ -17,7 +17,7 @@ export default {
   components: { LayoutMain, LayoutHeader, LayoutNav },
   setup(props, { root }) {
     //监听菜单收缩
-    const menuStatus = computed(()=> root.$store.state.isCollapse)
+    const menuStatus = computed(()=> root.$store.state.app.isCollapse)
     return {
       menuStatus
     }

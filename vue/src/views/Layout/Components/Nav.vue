@@ -43,7 +43,9 @@ export default {
     const routers = reactive(root.$router.options.routes);
 
     /*监听 */
-    const isCollapse = computed(()=> root.$store.state.isCollapse)
+    const isCollapse = computed(()=> root.$store.state.app.isCollapse)
+
+    // console.log(root.$store.state.app)
 
     return {
       isCollapse,

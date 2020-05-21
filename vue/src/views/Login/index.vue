@@ -90,6 +90,7 @@
 
 <script>
 import sha1 from "js-sha1";
+import Vuex from "vuex";
 import { GetSms, Register, Login } from "@/api/login";
 import { reactive, ref, onMounted } from "@vue/composition-api";
 import {
@@ -283,16 +284,17 @@ export default {
     };
 
     //登录
-    const login = () => {
+    const login = (() => {
       let requestData = {
         username: ruleForm.email,
         password: sha1(ruleForm.password),
         code: ruleForm.cap,
         module: "login"
       };
-      Login(requestData)
+      root.$store.dispatch("login",requestData)
+      // Login(requestData)
         .then(response => {
-          console.log(response + "login...");
+          console.log(response + "login...登录成功");
           root.$router.push({
             name: "Console"
           });
@@ -300,7 +302,7 @@ export default {
         .catch(error => {
           console.log(error);
         });
-    };
+    })
 
     //注册
     const register = () => {
