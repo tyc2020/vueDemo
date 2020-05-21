@@ -3,15 +3,15 @@ import router from "./index.js";
 import { getToken } from "@/utils/app";
 
 //设置白名单
-const whiteRouter = ["./login"]
+const whiteRouter = ["/login"]
 router.beforeEach((to,from, next) => {
+  // console.log(to)
   if(getToken()){
     console.log("exist")
   }else{
-    // next("./login")
     console.log("not exist")
     if(whiteRouter.indexOf(to.path) !== -1){
-      next()
+      next() 
     }else{
       next("/login")
     }
