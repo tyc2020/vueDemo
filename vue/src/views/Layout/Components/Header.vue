@@ -2,22 +2,34 @@
   <div id="header-wrap">
     <div class="pull-left header-icon" @click="navMenuState"><svg-icon iconClass="menu" className="menu"></svg-icon></div>
     <div class="pull-right">
-      <div class="user-info pull-left">星月</div>
-      <div class="header-icon pull-right"><svg-icon iconClass="exit" className="exit" /></div>
-    </div>
+      <div class="user-info pull-left">{{ username }}</div>
+      <div class="header-icon pull-right" @click="exit"><svg-icon iconClass="exit" className="exit" /></div>
+    </div>  
   </div>
   
 </template>
 
 <script>
+import { computed } from "@vue/composition-api";
 export default {
   name: "layoutHeader",
   setup(props, { root }){
+    const username = computed(() => root.$store.state.app.username)
     const navMenuState = () => {
       root.$store.commit("app/SET_COLLAPSE")
     }
+    //退出按钮事件
+    const exit = () => {
+      root.$store.dispatch("app/exit").then(() => {
+        root.$router.push({
+          name: "Login"
+        })
+      })
+    }
     return {
-      navMenuState
+      navMenuState,
+      username,
+      exit
     }
   }
 

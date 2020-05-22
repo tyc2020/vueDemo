@@ -1,13 +1,14 @@
 import { Login } from "@/api/login";
-import { setToken } from "@/utils/app";
+import { setUserName, getUserName, setToken, removeToken, removeUserName } from "@/utils/app";
 const state = {
     //获取传入的值
     isCollapse:JSON.parse(sessionStorage.getItem("isCollapse")) ||false,
     to_ken:"",
-    username:"" 
+    username: getUserName() || ''
 }
 const getters = { //computed
   isCollapse: state => state.isCollapse //parse
+  // username: state => state.username
 }
 const mutations = {
   SET_COLLAPSE(state){
@@ -18,22 +19,27 @@ const mutations = {
   SET_TOKEN(state,value){
     state.to_ken = value
   },
-  SET_USERNMAE(state,value){
+  SET_USERNAME(state,value){
     state.username = value
+  },
+  REMOVE_TOKEN(state){
+    state.to_ken = ''
   }
 }
 
 const actions = { //回调处理事情
-  login(content,requestData){
+  //登录操作
+  login(content, requestData){
     return new Promise((resolve,reject) => {
       Login(requestData)
       .then(response => {
         let data = response.data.data
         // console.log(response)
-        console.log(data.token)
-        content.comit("SET_TOKEN",data.token)
-        content.comit("SET_USERNMAE",data.username)
+        content.commit("SET_TOKEN",data.token)
+        content.commit("SET_USERNAME",data.username)
         setToken(data.token)
+        setUserName(data.username)
+
 
         resolve()
       })
@@ -41,6 +47,18 @@ const actions = { //回调处理事情
         reject()
       });
     })
+  },
+
+  //退出操作
+  exit({ commit }){
+    return new Promise((resolve,reject) => {
+      removeToken();
+      removeUserName();
+      commit("SET_TOKEN",'');
+      commit("SET_USERNAME",'');
+      resolve();
+    })
+
   }
 }
 
