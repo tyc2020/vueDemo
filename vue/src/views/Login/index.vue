@@ -291,7 +291,7 @@ export default {
         code: ruleForm.cap,
         module: "login"
       };
-      root.$store.dispatch("login",requestData)
+      root.$store.dispatch("app/login",requestData)
       // Login(requestData)
         .then(response => {
           console.log(response + "login...登录成功");
@@ -300,7 +300,7 @@ export default {
           });
         })
         .catch(error => {
-          console.log(error);
+          // console.log(error);
         });
     })
 
