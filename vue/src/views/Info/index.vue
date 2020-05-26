@@ -1,5 +1,12 @@
 <template>
-  <div>信息列表</div>
+  <div>
+    <el-row :gutter="20">
+      <el-col :span="12"><div class="box bc-gray"></div></el-col>
+      <el-col :span="12"><div class="box"></div></el-col>
+
+      <el-col></el-col>
+    </el-row>
+  </div>
 </template>
 <script>
 export default {
@@ -7,4 +14,15 @@ export default {
   setup() {}
 };
 </script>
-<style lang="scss" scaped></style>
+<style lang="scss" scaped>
+.box{
+  background-color: red;
+  height: 20px;
+}
+.bc-gray {
+  background-color: #ccc;
+}
+.bc-red {
+  background-color: red;
+}
+</style>
