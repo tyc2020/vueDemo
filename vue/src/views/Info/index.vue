@@ -1,6 +1,5 @@
 <template>
   <div>
-    <el-form :inline="true" :model="formInline" class="demo-form-inline">
       <el-row :gutter="14">
         <el-col :span="4">
 
@@ -58,9 +57,9 @@
         <el-col :span="2" class="pull-right">
           <el-button type="danger" >新增</el-button>
         </el-col>
-        
       </el-row>
-    </el-form>
+  
+
   </div>
 </template>
 <script>
