@@ -29,3 +29,17 @@ li.el-submenu{
     background-color: $btnColor !important;
   }
 }
+
+/*table 样式*/
+div.el-table {
+  td,th {
+  text-align: center;
+  }
+  th{
+    font-weight: bold;
+    color:black;
+  }
+  td{
+    font-size: 14px;
+  }
+}
