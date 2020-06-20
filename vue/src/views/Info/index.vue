@@ -72,7 +72,7 @@
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button size="mini">删除</el-button>
-            <el-button size="mini" type="danger">编辑</el-button>
+            <el-button size="mini" type="danger" @click="dialog_info = true">编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -96,7 +96,7 @@
       </el-row>
 
       <!--新增弹窗-->
-      <dialogInfo :flag="dialog_info"></dialogInfo>
+      <dialogInfo :flag.sync="dialog_info" ></dialogInfo>
 
   </div>
 </template>
@@ -182,6 +182,10 @@ export default {
         const handleCurrentChange = (val) => {
 
         }
+        //弃用
+        // const closeDialog = () =>{
+        //   dialog_info.value = false
+        // }
 
         return {
           //ref
@@ -199,7 +203,7 @@ export default {
           //vue2.0 methods
           handleCurrentChange,
           handleSizeChange,
-
+          // closeDialog
           
         }
   }
